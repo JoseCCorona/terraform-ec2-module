@@ -97,8 +97,10 @@ resource "aws_instance" "jco_ec2" {
   user_data     = var.user_data
   key_name      = aws_key_pair.jco_key.key_name
   vpc_security_group_ids = [ aws_security_group.jco_sg.id ]
+  iam_instance_profile = var.instance_role
   
   tags = {
     Name = "${var.prefix}-ec2-${var.ec2_identifier}"
   }
+
 }
