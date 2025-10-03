@@ -1,23 +1,32 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 6.0"
+    }
+  }
+}
+
 # VPC
 resource "aws_vpc" "jco_vpc" {
-  cidr_block           = "10.123.0.0/16"
+  cidr_block           = var.vpc_cidr_block
   enable_dns_hostnames = true
   enable_dns_support   = true
 
   tags = {
-    Name = "${var.prefix}-vpc"
+    Name = "${var.prefix}-vpc-${var.vpc_identifier}"
   }
 }
 
 # Subnet
 resource "aws_subnet" "jco_subnet" {
   vpc_id                  = aws_vpc.jco_vpc.id
-  cidr_block              = "10.123.0.0/24"
+  cidr_block              = var.subnet_cidr_block
   map_public_ip_on_launch = true
   availability_zone       = "${var.region}${var.availability_zone}"
 
   tags = {
-    Name = "${var.prefix}-public-subnet"
+    Name = "${var.prefix}-public-subnet-${var.subnet_identifier}"
   }
 }
 
@@ -26,7 +35,7 @@ resource "aws_internet_gateway" "jco_igw" {
   vpc_id = aws_vpc.jco_vpc.id
 
   tags = {
-    Name = "${var.prefix}-ig"
+    Name = "${var.prefix}-ig-${var.vpc_identifier}"
   }
 }
 
@@ -35,7 +44,7 @@ resource "aws_route_table" "jco_rt_table" {
   vpc_id = aws_vpc.jco_vpc.id
 
   tags = {
-    Name = "${var.prefix}-rt"
+    Name = "${var.prefix}-rt-${var.vpc_identifier}"
   }
 }
 
@@ -58,26 +67,26 @@ resource "aws_security_group" "jco_sg" {
   vpc_id = aws_vpc.jco_vpc.id
   ingress {
     cidr_blocks = ["${var.ingress_cidr_blocks}"]
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+    from_port   = var.ingress_port
+    to_port     = var.ingress_port
+    protocol    = var.ingress_protocol
   }
   egress {
     cidr_blocks = ["${var.egress_cidr_blocks}"]
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+    from_port   = var.egress_port
+    to_port     = var.egress_port
+    protocol    = var.egress_protocol
   }
 
   tags = {
-    Name = "${var.prefix}-sg"
+    Name = "${var.prefix}-sg-${var.subnet_identifier}"
   }
 }
 
 # SSH Key
 resource "aws_key_pair" "jco_key" {
   key_name   = "${var.prefix}-key"
-  public_key = file("~/.ssh/${var.prefix}-key.pub")
+  public_key = var.ssh_public_key
 }
 
 # EC2
@@ -85,11 +94,11 @@ resource "aws_instance" "jco_ec2" {
   ami           = var.ami
   instance_type = var.instance_type
   subnet_id     = aws_subnet.jco_subnet.id
-  user_data     = file("sys-update.sh")
+  user_data     = var.user_data
   key_name      = aws_key_pair.jco_key.key_name
   vpc_security_group_ids = [ aws_security_group.jco_sg.id ]
   
   tags = {
-    Name = "${var.prefix}-ec2"
+    Name = "${var.prefix}-ec2-${var.ec2_identifier}"
   }
 }
