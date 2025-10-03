@@ -119,6 +119,7 @@ variable "user_data" {
 variable "ec2_identifier"{
   type        = string
   default = "01"
-  description = "Identifier for VPC name"
+  description = "Identifier for EC2 name"
 } 
+
 
