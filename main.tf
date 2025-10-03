@@ -85,7 +85,7 @@ resource "aws_security_group" "jco_sg" {
 
 # SSH Key
 resource "aws_key_pair" "jco_key" {
-  key_name   = "${var.prefix}-key"
+  key_name   = "${var.prefix}-key-${var.ec2_identifier}"
   public_key = var.ssh_public_key
 }
 
@@ -104,3 +104,4 @@ resource "aws_instance" "jco_ec2" {
   }
 
 }
+
