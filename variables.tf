@@ -122,5 +122,9 @@ variable "ec2_identifier"{
   description = "Identifier for EC2 name"
 } 
 
-
-
+# EC2 Role
+variable "instance_role" {
+  description = "The instance role to be attached"
+  type        = string
+  default     = null
+}
