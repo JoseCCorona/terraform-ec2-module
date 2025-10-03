@@ -41,7 +41,7 @@ variable "ingress_port"{
 
 # SG Ingress protocol
 variable "ingress_protocol"{
-  type        = number
+  type        = string
   default = "tcp"
   description = "Ingress protocol for SG"
 } 
@@ -53,16 +53,16 @@ variable "egress_cidr_blocks" {
   description = "Egress CIDR blocks for SG"
 }
 
-# SG Ingress port
+# SG Egress port
 variable "egress_port"{
   type        = number
   default = "0"
   description = "Egress port for SG"
 } 
 
-# SG Ingress protocol
+# SG Egress protocol
 variable "egress_protocol"{
-  type        = number
+  type        = string
   default = "-1"
   description = "Egress protocol for SG"
 } 
@@ -121,5 +121,6 @@ variable "ec2_identifier"{
   default = "01"
   description = "Identifier for EC2 name"
 } 
+
 
 
